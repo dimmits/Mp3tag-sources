@@ -94,4 +94,3 @@ regexpreplace "<br ?/>" "\r\n"
 #regexpreplace "\‘" "\r\n"
 findinline "<div class=lyrics>"
 sayuntil "</div><br><br>"
-

@@ -1,0 +1,116 @@
+##############################################################################################
+#                                                                                            #
+#                Mp3tag sourse for MetalStorm (by artist & title)                            #
+#                      created by BGuardian on 2016-11-12                                    #
+#                                                                                            #
+##############################################################################################
+#                                                                                            #
+# Lyrics can only be fetched one by one.                                                     #
+#                                                                                            #
+# This *.src file must be placed in your sources directory.                                  #
+# You can quickly reach it with [Windows Key + R] and enter %appdata%\Mp3tag\data\sources    #
+# Or enter %appdata%\Mp3tag\data\sources in the Explorer address bar                         #
+#                                                                                            #
+##############################################################################################
+
+[Name]=MetalStorm
+[BasedOn]=http://www.metalstorm.net
+[IndexUrl]=http://www.metalstorm.net/bands/albums.php?a_where=a.albumname&a_what=%s
+[AlbumUrl]=http://www.metalstorm.net/bands/lyrics.php?
+[WordSeperator]=+
+[IndexFormat]=%Artist%|%_url%|%Album%|%Year%
+[SearchBy]=%album%
+
+
+
+[ParserScriptIndex]=...
+# ###################################################################
+#					I  N  D  E  X
+# ###################################################################
+#debug "on" "D:\debug_metalstorm_A_lyrics.html" "666"
+#debugwriteinput "D:\debug\MS Album A lyrics.htm"
+
+findline "<b>Band</b></a>"
+findline "<td class=windowbg"
+
+do
+	# artist
+	findline "<a  href=band.php?"
+	findinline "<a  href=band.php?"
+	findinline ">"
+	sayuntil "</a>"
+	say "|"
+	
+	# url
+	findinline "<a  href=album.php?"
+	sayuntil ">"
+	say "|"
+	
+	# album
+	movechar 1
+	sayuntil "</a>"
+	say "|"
+	
+	# year
+	findline "a_where=a.year"
+	findinline "a_where=a.year"
+	findinline ">"
+	sayuntil "</a>"
+	saynewline
+	
+	findline "<td class=windowbg" 8
+	moveline 1 1
+	unspace
+
+while "<td class=windowbg"
+
+
+
+[ParserScriptAlbum]=...
+# ###################################################################
+#					A  L  B  U  M
+# ###################################################################
+#debug "on" "D:\debug_metalstorm_B_lyrics.html" "666"
+#debugwriteinput "D:\debug\MS Album B lyrics.htm"
+
+
+# Artist
+outputto "Artist"
+findline "<td class=submenu>"
+moveline 1
+unspace
+sayuntil "-"
+
+# Album
+outputto "Album"
+findinline "-"
+sayuntil " lyrics"
+#sayrest
+
+# Cover
+outputto "Coverurl"
+findline "<td width=102 valign=top>"
+#findline "style='width:100px;height:100px'>"
+findinline "<img src="
+say "http://www.metalstorm.net"
+sayuntil "  style="
+
+
+# UNSYNCEDLYRICS
+findline "<td class=windowbg2 style='padding:25px'>"
+
+do
+	outputto "UNSYNCEDLYRICS"
+	moveline 1
+	joinuntil "</table>"
+	unspace
+	regexpreplace "(?i)<br>|<br />" "\r\n"
+	
+	sayuntil "</td>"
+	say "|"
+	SayNewline
+	findline "<td class=windowbg2 style='padding:25px'>" 1 1
+	unspace
+	
+while "<td class=windowbg2 style='padding:25px'>" 100
+

@@ -5,7 +5,7 @@
 #                                                                                            #
 ##############################################################################################
 #                                                                                            #
-# Lyrics can only be fetched one by one.                                                     #
+# Lyrics can be fetched by album.                                                            #
 #                                                                                            #
 # This *.src file must be placed in your sources directory.                                  #
 # You can quickly reach it with [Windows Key + R] and enter %appdata%\Mp3tag\data\sources    #
@@ -113,4 +113,3 @@ do
 	unspace
 	
 while "<td class=windowbg2 style='padding:25px'>" 100
-

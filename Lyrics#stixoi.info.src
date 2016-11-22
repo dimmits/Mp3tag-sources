@@ -1,0 +1,96 @@
+##############################################################################################
+#                                                                                            #
+#                Mp3tag sourse for stixoi.info (by artist & title)                           #
+#                      created by BGuardian on 2016-11-12                                    #
+#                                                                                            #
+##############################################################################################
+#                                                                                            #
+# Lyrics can only be fetched one by one.                                                     #
+#                                                                                            #
+# This *.src file must be placed in your sources directory.                                  #
+# You can quickly reach it with [Windows Key + R] and enter %appdata%\Mp3tag\data\sources    #
+# or enter %appdata%\Mp3tag\data\sources in the Explorer address bar                         #
+#                                                                                            #
+##############################################################################################
+
+[Name]=stixoi.info
+[BasedOn]=http://www.stixoi.info/
+[IndexUrl]=http://www.stixoi.info/stixoi.php?act=ss&info=SS&keywords=%s
+[AlbumUrl]=http://www.stixoi.info/
+[WordSeperator]=+
+[SearchBy]=$replace($lower(%title% %artist%),&,%%26,?, ,'', )
+[IndexFormat]=%Score%|%_url%|%Title%|%Artist%
+[Encoding]=url-utf-8
+[UserAgent]=1
+
+[ParserScriptIndex]=...
+# ###################################################################
+#					I  N  D  E  X
+# ###################################################################
+# This key contains a multi-line parser script (start with ...) which parses the search results page.
+# Uncomment the following line if you want to write some debug output
+#debug "on" "D:\debug_stixoi_index.html" 100
+
+
+findline "<font class=red2>"
+findinline "<table width=90% cellSpacing=0 cellPadding=0>"
+findinline "</tr><tr>"
+
+do
+	# Score
+	findinline "<td class=row1 align=center>" 2 1
+	sayuntil "</td>"
+	say "|"
+	
+	# URL
+	findinline "<a href=" 1 1
+	sayuntil "&hl="
+	say "|"
+	
+	# Title
+	findinline "><b>" 1 1
+	sayuntil "</b>"
+	say "|"
+	
+	# Artist
+	findinline "</td><td" 3 1
+	findinline ">"
+	# Check if there is an artist available
+	if "<a" 
+		findinline "&singer_id="
+		findinline ">"
+		sayuntil "</a>"
+		# Check for multiple artists
+		if "</a> &"
+			findinline "&singer_id="
+			findinline ">"
+			say " & "
+			sayuntil "</a>"
+		endif
+	else
+		say "[UNKNOWN ARTIST]"
+	endif
+	SayNewline
+	
+	findinline "</tr><tr>" 1 1
+	
+while "<td class=row1 align=center>" 32
+
+
+[ParserScriptAlbum]=...
+# ###################################################################
+#		A  L  B  U  M
+# ###################################################################
+# Uncomment the following line if you want to write some debug output
+#debug "on" "D:\debug_stixoi_album.html" 100
+
+
+# UNSYNCEDLYRICS
+outputto "UNSYNCEDLYRICS"
+findline "<!-- left_navigation_eof //-->"
+findline "<td class=lyrics1"
+joinuntil "</div><br><br>"
+regexpreplace "<br ?/>" "\r\n"
+#regexpreplace "\‘" "\r\n"
+findinline "<div class=lyrics>"
+sayuntil "</div><br><br>"
